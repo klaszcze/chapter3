@@ -24,5 +24,16 @@ describe("todos", () => {
     const response = await request(app).delete("/todos");
     expect(response.status).toBe(204);
   })
+
+  test("handles delete", async () => {
+    await request(app).delete("/todos");
+    const response = await request(app).get("/todos");
+    expect(response.body.length).toBe(0);
+  })
   
+  test("#POST creates new todos", async () => {
+    await request(app).post("/todos").set({ title: "new"})
+    const response = await request(app).get("/todos");
+    expect(response.body.length).toBe(1);
+  })
 });
