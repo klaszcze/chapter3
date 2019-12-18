@@ -22,9 +22,14 @@ app.get("/todos", (req, res) => {
   res.send(Object.values(database));
 });
 
-app.post<{}, ITodo, { title: string }>("/todos", (req, res) => {
-  database[req.body.title] = { title: req.body.title, completed: false} ;
-  res.send(database[req.body.title]);
+app.post<{}, ITodo, { title?: string }>("/todos", (req, res) => {
+  if (req.body.title === undefined) {
+    res.status(403);
+    res.send();
+  } else {
+    database[req.body.title] = { title: req.body.title, completed: false} ;
+    res.send(database[req.body.title]);
+  }
 });
 
 app.delete("/todos", (req, res) => {
