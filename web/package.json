@@ -4,7 +4,8 @@
   "description": "Hello World",
   "main": "index.js",
   "scripts": {
-    "start:dev": "tsc-watch --onSuccess 'node ./dist/server.js'"
+    "start:dev": "tsc-watch --onSuccess 'node ./dist/server.js'",
+    "test": "jest --runInBand"
   },
   "author": "",
   "license": "ISC",
@@ -12,8 +13,40 @@
     "express": "^4.17.1"
   },
   "devDependencies": {
+    "@types/express": "^4.17.2",
+    "@types/jest": "^24.0.23",
     "@types/node": "^12.12.20",
-    "typescript": "^3.7.3",
-    "tsc-watch": "^4.0.0"
+    "@types/supertest": "^2.0.8",
+    "jest": "^24.9.0",
+    "supertest": "^4.0.2",
+    "ts-jest": "^24.2.0",
+    "tsc-watch": "^4.0.0",
+    "typescript": "^3.7.3"
+  },
+  "jest": {
+    "moduleFileExtensions": [
+      "js",
+      "json",
+      "ts"
+    ],
+    "rootDir": ".",
+    "testRegex": ".(spec|e2e-spec).ts$",
+    "transform": {
+      "^.+\\.(t|j)s$": "ts-jest"
+    },
+    "coverageDirectory": "./coverage",
+    "coveragePathIgnorePatterns": [
+      "<rootDir>/node_modules/"
+    ],
+    "coverageReporters": [
+      "json",
+      "lcov",
+      "text",
+      "clover",
+      "json-summary"
+    ],
+    "testEnvironment": "node",
+    "setupFilesAfterEnv": [],
+    "clearMocks": true
   }
 }
