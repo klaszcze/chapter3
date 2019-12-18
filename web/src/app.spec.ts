@@ -2,56 +2,52 @@ import request from "supertest";
 import { app } from "./app";
 import { read } from "fs";
 
+const getAllToDos = () => request(app).get("/todos");
+const createToDo = (body: { title: string }) => request(app).post("/todos").send(body);
+const deleteAllTodos = () => request(app).delete("/todos")
+
 describe("todos", () => {
-  beforeEach(() => request(app).delete("/todos"))
+  beforeEach(() => deleteAllTodos())
 
   describe("#GET", () => {
-    test("handles get on index", () =>
-      request(app)
-        .get("/")
-        .expect(200));
-  
+    const subject = getAllToDos;
+
     test("handles get on index", async () => {
-      const response = await request(app).get("/todos");
+      const response = await subject();
       expect(response.status).toBe(200);
     })
   })
 
   describe("#POST", () => {
+    const subject = createToDo
+    
     test("#POST returns proper output", async () => {
       const body = { title: "abc", completed: false};
-      const response = await request(app)
-      .post("/todos")
-      .send(body);
+      const response = await subject({ title: "abc" });
       expect(response.body).toEqual(body);
     })
 
     test("#POST creates new todos", async () => {
-      await request(app).post("/todos").send({ title: "new"})
-      const response = await request(app).get("/todos");
+      await subject({title: 'abc'});
+      const response = await getAllToDos();
       expect(response.body.length).toBe(1);
     }) 
 
     test("#POST without title returns bad request", async () => {
-      const response = await request(app).post("/todos").send({})
-      expect(response.status).toBe(403);
-    })
-
-    test("#POST without title returns bad request", async () => {
-      const response = await request(app).post("/todos")
+      const response = await subject({} as { title: string});
       expect(response.status).toBe(403);
     })
   })
     
   describe('#DELETE all', () => {
     test("#DELETE returns status 200", async () => {
-      const response = await request(app).delete("/todos");
+      const response = await deleteAllTodos();
       expect(response.status).toBe(204);
     })
   
     test("handles delete", async () => {
-      await request(app).delete("/todos");
-      const response = await request(app).get("/todos");
+      await deleteAllTodos();
+      const response = await getAllToDos();
       expect(response.body.length).toBe(0);
     })
   })
