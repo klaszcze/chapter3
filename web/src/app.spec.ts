@@ -13,7 +13,7 @@ describe("todos", () => {
   })
 
   test("#POST returns proper output", async () => {
-    const body = { title: "abc"};
+    const body = { title: "abc", completed: false};
     const response = await request(app)
       .post("/todos")
       .send(body);
@@ -35,5 +35,5 @@ describe("todos", () => {
     await request(app).post("/todos").set({ title: "new"})
     const response = await request(app).get("/todos");
     expect(response.body.length).toBe(1);
-  })
+  })  
 });

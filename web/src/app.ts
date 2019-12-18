@@ -8,6 +8,7 @@ let database:{ [key:string] : ITodo} = {};
 
 interface ITodo {
   title: string;
+  completed: boolean;
 }
 
 app.use(cors());
@@ -21,9 +22,9 @@ app.get("/todos", (req, res) => {
   res.send(Object.values(database));
 });
 
-app.post("/todos", (req, res) => {
-  database[req.body.title] = req.body;
-  res.send(req.body);
+app.post<{}, ITodo, { title: string }>("/todos", (req, res) => {
+  database[req.body.title] = { title: req.body.title, completed: false} ;
+  res.send(database[req.body.title]);
 });
 
 app.delete("/todos", (req, res) => {
