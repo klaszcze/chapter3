@@ -1,6 +1,7 @@
 import cors from "cors";
 import express from "express";
 import bodyParser from "body-parser";
+import { restElement } from "@babel/types";
 
 export const app = express();
 
@@ -16,6 +17,11 @@ app.get("/todos", (req, res) => {
 });
 
 app.post("/todos", (req, res) => {
+  res.send(req.body);
+});
+
+app.delete("/todos", (req, res) => {
+  res.status(204);
   res.send(req.body);
 });
 

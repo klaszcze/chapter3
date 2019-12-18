@@ -12,11 +12,17 @@ describe("todos", () => {
     expect(response.status).toBe(200);
   })
 
-  test("#POST returns wthat ste", async () => {
+  test("#POST returns proper output", async () => {
     const body = { title: "abc"};
     const response = await request(app)
       .post("/todos")
       .send(body);
     expect(response.body).toEqual(body);
   })
+  
+  test("#DELETE returns status 200", async () => {
+    const response = await request(app).delete("/todos");
+    expect(response.status).toBe(204);
+  })
+  
 });
