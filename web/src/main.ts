@@ -1,5 +1,9 @@
 import { app } from "./app";
+import http from "http";
 
-app.listen(3000, () => {
-  console.log("Let's GO!");
+const server = http.createServer(app);
+
+const PORT = 3000;
+server.listen(PORT, () => {
+  console.log(`Let's GO... on port: ${PORT}`);
 });
