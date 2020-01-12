@@ -13,6 +13,15 @@ interface ITodo {
   url: string;
 }
 
+let setId = function() {
+  const lastValue = Object.values(database)[Object.values(database).length - 1]
+  if (lastValue == undefined) {
+    return 1
+  } else {
+    return lastValue.id + 1
+  }
+}
+
 app.use(cors());
 app.use(bodyParser.json());
 
@@ -41,8 +50,9 @@ app.post<{}, ITodo, { title?: string }>("/todos", (req, res) => {
     res.status(403);
     res.send();
   } else {
-    database[req.body.title] = { title: req.body.title, completed: false, id: 1,
-    url: "http://localhost:3000/todos/1" };
+    const id = setId()
+    database[req.body.title] = { title: req.body.title, completed: false, id: id,
+    url: `http://localhost:3000/todos/${id}` };
     res.send(database[req.body.title]);
   }
 });

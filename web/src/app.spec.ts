@@ -26,6 +26,16 @@ describe("todos", () => {
       const response = await request(app).get(`/todos/${todo.body.id}`); 
       expect(response.body.title).toEqual('abc')
     })
+
+    test("Creating two todos", async () => {
+      const todo1 = await subject({title: 'abc'});
+      const todo2 = await subject({title: 'def'});
+      const response1 = await getAllToDos();
+      expect(response1.body.length).toEqual(2);
+      const response2 = await request(app).get(`/todos/${todo2.body.id}`); 
+      expect(response2.body.title).toEqual('def')
+    })
+    
   })
 
   describe("#POST", () => {
