@@ -18,13 +18,25 @@ describe("todos", () => {
     })
   })
 
+  describe("#GET one", () => {
+    const subject = createToDo;
+
+    test("GET with reurned url returns proper todo", async () => {
+      const todo = await subject({title: 'abc'});
+      const response = await request(app).get(`/todos/${todo.body.id}`); 
+      expect(response.body.title).toEqual('abc')
+    })
+  })
+
   describe("#POST", () => {
     const subject = createToDo
     
     test("#POST returns proper output", async () => {
-      const body = { title: "abc", completed: false, url: ""};
+      const body = { title: "abc"};
       const response = await subject({ title: "abc" });
-      expect(response.body).toEqual(body);
+      expect(response.body.title).toEqual(body.title);
+      expect(response.body.completed).toEqual(false);
+      expect(typeof response.body.url).toBe("string");
     })
 
     test("#POST creates new todos", async () => {
