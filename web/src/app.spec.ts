@@ -9,7 +9,7 @@ const deleteAllTodos = () => request(app).delete("/todos")
 describe("todos", () => {
   beforeEach(() => deleteAllTodos())
 
-  describe("#GET", () => {
+  describe("#GET all", () => {
     const subject = getAllToDos;
 
     test("handles get on index", async () => {
@@ -22,7 +22,7 @@ describe("todos", () => {
     const subject = createToDo
     
     test("#POST returns proper output", async () => {
-      const body = { title: "abc", completed: false};
+      const body = { title: "abc", completed: false, url: ""};
       const response = await subject({ title: "abc" });
       expect(response.body).toEqual(body);
     })
