@@ -77,3 +77,16 @@ app.delete("/todos", (req, res) => {
   res.status(204);
   res.send(req.body);
 });
+
+app.delete("/todos/:id", (req, res) => {
+  const id = Number(req.params.id);
+  const todoKey = Object.keys(database).find(key => database[key].id === id);
+  if (todoKey === undefined) {
+    res.status(403);
+    res.send();
+  } else {
+    delete database[todoKey]
+    res.status(204);
+    res.send();
+  }
+});

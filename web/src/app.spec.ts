@@ -60,19 +60,41 @@ describe("todos", () => {
       expect(response.status).toBe(403);
     })
   })
-    
+  
   describe('#DELETE all', () => {
-    test("#DELETE returns status 200", async () => {
+    test("#DELETE returns status 204", async () => {
       const response = await deleteAllTodos();
       expect(response.status).toBe(204);
     })
-  
+    
     test("handles delete", async () => {
       await deleteAllTodos();
       const response = await getAllToDos();
       expect(response.body.length).toBe(0);
     })
   })
+  
+  describe("#DELETE one", () => {
+    test("#delete returns status 204", async () => {
+      const todo = await createToDo({ title: "first" })
+      const response = await request(app).delete(`/todos/${todo.body.id}`)
+      expect(response.status).toBe(204);
+    })
+
+    test("handles delete of one todo", async () => {
+      await createToDo({ title: "first" })
+      const todo = await createToDo({ title: "second" })
+      await request(app).delete(`/todos/${todo.body.id}`);
+      const response = await getAllToDos();
+      expect(response.body.length).toBe(1);
+    })
+
+    test("Retrns status 403 in not found", async () => {
+      const todo = await createToDo({ title: "first" })
+      const response = await request(app).delete(`/todos/${todo.body.id + 1}`)
+      expect(response.status).toBe(403);
+    })
+  });
 
   describe("#PATCH", () => {
     test("#PATCH todo's title", async () => {
@@ -90,3 +112,4 @@ describe("todos", () => {
     })
   })
 });
+
