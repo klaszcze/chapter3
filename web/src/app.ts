@@ -10,6 +10,7 @@ interface ITodo {
   id: number;
   title: string;
   completed: boolean;
+  order: number | null;
   url: string;
 }
 
@@ -45,19 +46,20 @@ app.get("/todos/:id", (req, res) => {
   }
 })
 
-app.post<{}, ITodo, { title?: string }>("/todos", (req, res) => {
+app.post<{}, ITodo, { title?: string, order?: number }>("/todos", (req, res) => {
   if (req.body.title === undefined) {
     res.status(403);
     res.send();
   } else {
     const id = setId()
+    const order = req.body.order || null
     database[req.body.title] = { title: req.body.title, completed: false, id: id,
-    url: `http://localhost:3000/todos/${id}` };
+    url: `http://localhost:3000/todos/${id}`, order: order };
     res.send(database[req.body.title]);
   }
 });
 
-app.patch<{ id: string }, ITodo, { title?: string, completed: boolean }>("/todos/:id", (req, res) => {
+app.patch<{ id: string }, ITodo, { title?: string, completed: boolean, order?: number }>("/todos/:id", (req, res) => {
   const id = Number(req.params.id)
   const todoKey = Object.keys(database).find(key => database[key].id === id);
   if (todoKey === undefined) {
@@ -66,6 +68,9 @@ app.patch<{ id: string }, ITodo, { title?: string, completed: boolean }>("/todos
   } else {
     if (req.body.title != undefined){
       database[todoKey].title = req.body.title
+    }
+    if (req.body.order != undefined) {
+      database[todoKey].order = req.body.order
     }
     database[todoKey].completed = req.body.completed
     res.send(database[todoKey]);

@@ -3,7 +3,7 @@ import { app } from "./app";
 import { read } from "fs";
 
 const getAllToDos = () => request(app).get("/todos");
-const createToDo = (body: { title: string }) => request(app).post("/todos").send(body);
+const createToDo = (body: { title: string, order?: number }) => request(app).post("/todos").send(body);
 const deleteAllTodos = () => request(app).delete("/todos")
 
 describe("todos", () => {
@@ -35,17 +35,17 @@ describe("todos", () => {
       const response2 = await request(app).get(`/todos/${todo2.body.id}`); 
       expect(response2.body.title).toEqual('def')
     })
-    
   })
 
   describe("#POST", () => {
     const subject = createToDo
     
     test("#POST returns proper output", async () => {
-      const body = { title: "abc"};
-      const response = await subject({ title: "abc" });
+      const body = { title: "abc", order: 112 };
+      const response = await subject({ title: "abc", order: 112 });
       expect(response.body.title).toEqual(body.title);
       expect(response.body.completed).toEqual(false);
+      expect(response.body.order).toEqual(body.order);
       expect(typeof response.body.url).toBe("string");
     })
 
@@ -56,7 +56,7 @@ describe("todos", () => {
     }) 
 
     test("#POST without title returns bad request", async () => {
-      const response = await subject({} as { title: string});
+      const response = await subject({} as { title: string });
       expect(response.status).toBe(403);
     })
   })
@@ -109,6 +109,13 @@ describe("todos", () => {
       await request(app).patch(`/todos/${todo.body.id}`).send({ completed: true });
       const response = await request(app).get(`/todos/${todo.body.id}`); 
       expect(response.body.completed).toEqual(true)
+    })
+
+    test("#PATCH todo's order", async () => {
+      const todo = await createToDo({ title: "first", order: 99 })
+      await request(app).patch(`/todos/${todo.body.id}`).send({ order: 11 });
+      const response = await request(app).get(`/todos/${todo.body.id}`); 
+      expect(response.body.order).toEqual(11)
     })
   })
 });
