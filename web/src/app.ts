@@ -57,9 +57,24 @@ app.post<{}, ITodo, { title?: string }>("/todos", (req, res) => {
   }
 });
 
+app.patch<{ id: string }, ITodo, { title?: string, completed: boolean }>("/todos/:id", (req, res) => {
+  const id = Number(req.params.id)
+  const todoKey = Object.keys(database).find(key => database[key].id === id);
+  if (todoKey === undefined) {
+    res.status(403);
+    res.send();
+  } else {
+    console.log(req.body)
+    if (req.body.title != undefined){
+      database[todoKey].title = req.body.title
+    }
+    database[todoKey].completed = req.body.completed
+    res.send(database[todoKey]);
+  }
+});
+
 app.delete("/todos", (req, res) => {
   database = {};
   res.status(204);
   res.send(req.body);
 });
-

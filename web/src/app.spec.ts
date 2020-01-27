@@ -73,4 +73,20 @@ describe("todos", () => {
       expect(response.body.length).toBe(0);
     })
   })
+
+  describe("#PATCH", () => {
+    test("#PATCH todo's title", async () => {
+      const todo = await createToDo({ title: "first" })
+      await request(app).patch(`/todos/${todo.body.id}`).send({ title: "new" });
+      const response = await request(app).get(`/todos/${todo.body.id}`); 
+      expect(response.body.title).toEqual("new")
+    })
+
+    test("#PATCH todo's completance", async () => {
+      const todo = await createToDo({ title: "first" })
+      await request(app).patch(`/todos/${todo.body.id}`).send({ completed: true });
+      const response = await request(app).get(`/todos/${todo.body.id}`); 
+      expect(response.body.completed).toEqual(true)
+    })
+  })
 });
