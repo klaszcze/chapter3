@@ -64,7 +64,6 @@ app.patch<{ id: string }, ITodo, { title?: string, completed: boolean }>("/todos
     res.status(403);
     res.send();
   } else {
-    console.log(req.body)
     if (req.body.title != undefined){
       database[todoKey].title = req.body.title
     }
