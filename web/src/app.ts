@@ -4,7 +4,7 @@ import bodyParser from "body-parser";
 import { restElement } from "@babel/types";
 
 export const app = express();
-let database:{ [key:string] : ITodo} = {};
+let database:{ [id:number] : ITodo} = {};
 
 interface ITodo {
   id: number;
@@ -15,12 +15,16 @@ interface ITodo {
 }
 
 let setId = function() {
-  const lastValue = Object.values(database)[Object.values(database).length - 1]
+  const lastValue = Object.keys(database)[Object.values(database).length - 1]
   if (lastValue == undefined) {
-    return 1
+    return 0
   } else {
-    return lastValue.id + 1
+    return Number(lastValue) + 1
   }
+}
+
+let getToDoKey = function(id: number){
+  return database[id]
 }
 
 app.use(cors());
@@ -36,12 +40,11 @@ app.get("/todos", (req, res) => {
 
 app.get("/todos/:id", (req, res) => {
   const id = Number(req.params.id);
-  const todoKey = Object.keys(database).find(key => database[key].id === id);
-  if (todoKey === undefined) {
+  const todo = getToDoKey(id);
+  if (todo === undefined) {
     res.status(403);
     res.send();
   } else {
-    const todo = database[todoKey]
     res.send(todo);
   }
 })
@@ -53,27 +56,29 @@ app.post<{}, ITodo, { title?: string, order?: number }>("/todos", (req, res) => 
   } else {
     const id = setId()
     const order = req.body.order || null
-    database[req.body.title] = { title: req.body.title, completed: false, id: id,
+    database[id] = { title: req.body.title, completed: false, id: id,
     url: `http://localhost:3000/todos/${id}`, order: order };
-    res.send(database[req.body.title]);
+    res.send(database[id]);
   }
 });
 
 app.patch<{ id: string }, ITodo, { title?: string, completed: boolean, order?: number }>("/todos/:id", (req, res) => {
   const id = Number(req.params.id)
-  const todoKey = Object.keys(database).find(key => database[key].id === id);
+  const todoKey = getToDoKey(id);
   if (todoKey === undefined) {
     res.status(403);
     res.send();
   } else {
     if (req.body.title != undefined){
-      database[todoKey].title = req.body.title
+      database[id].title = req.body.title
     }
     if (req.body.order != undefined) {
-      database[todoKey].order = req.body.order
+      database[id].order = req.body.order
     }
-    database[todoKey].completed = req.body.completed
-    res.send(database[todoKey]);
+    if (req.body.completed != undefined) {
+      database[id].completed = req.body.completed
+    }
+    res.send(database[id]);
   }
 });
 
@@ -85,12 +90,12 @@ app.delete("/todos", (req, res) => {
 
 app.delete("/todos/:id", (req, res) => {
   const id = Number(req.params.id);
-  const todoKey = Object.keys(database).find(key => database[key].id === id);
-  if (todoKey === undefined) {
+  const todo = getToDoKey(id);
+  if (todo === undefined) {
     res.status(403);
     res.send();
   } else {
-    delete database[todoKey]
+    delete database[id]
     res.status(204);
     res.send();
   }
